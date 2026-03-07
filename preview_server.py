@@ -17,7 +17,7 @@ HTML_TEMPLATE = """
     <meta charset="utf-8">
     <title>Meta-Patch | TONE-IDE</title>
     <style>
-        :root {{
+        :root {
             --bg: #002b36;
             --panel: #073642;
             --text: #839496;
@@ -28,9 +28,9 @@ HTML_TEMPLATE = """
             --amp: #dc322f;
             --cab: #859900;
             --warning: #cb4b16;
-        }}
+        }
         
-        body {{ 
+        body { 
             font-family: 'ui-monospace', 'Cascadia Code', 'Source Code Pro', Menlo, monospace; 
             background: var(--bg); 
             color: var(--text); 
@@ -39,9 +39,9 @@ HTML_TEMPLATE = """
             height: 100vh;
             display: flex;
             flex-direction: column;
-        }}
+        }
 
-        header {{
+        header {
             padding: 12px 20px;
             border-bottom: 1px solid var(--border);
             display: flex;
@@ -49,31 +49,31 @@ HTML_TEMPLATE = """
             align-items: center;
             background: var(--panel);
             color: var(--text-bright);
-        }}
+        }
 
-        .main-container {{
+        .main-container {
             display: flex;
             flex: 1;
             overflow: hidden;
-        }}
+        }
 
-        .editor-pane {{
+        .editor-pane {
             flex: 1;
             padding: 30px;
             overflow-y: auto;
             border-right: 1px solid var(--border);
-        }}
+        }
 
-        .text-pane {{
+        .text-pane {
             flex: 1;
             background: #001e26;
             padding: 20px;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-        }}
+        }
 
-        pre, textarea {{
+        pre, textarea {
             font-family: inherit;
             background: transparent;
             color: #2aa198; 
@@ -84,16 +84,16 @@ HTML_TEMPLATE = """
             outline: none;
             font-size: 14px;
             line-height: 1.5;
-        }}
+        }
 
-        .signal-chain {{
+        .signal-chain {
             display: flex;
             flex-direction: column;
             gap: 12px;
             align-items: center;
-        }}
+        }
 
-        .component {{
+        .component {
             width: 90%;
             max-width: 450px;
             border: 1px solid var(--border);
@@ -101,46 +101,54 @@ HTML_TEMPLATE = """
             position: relative;
             background: var(--panel);
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }}
+            cursor: grab;
+        }
+        .component:active { cursor: grabbing; }
+        .component.dragging { opacity: 0.4; border-style: dashed; }
         
-        .pedal {{ border-left: 4px solid var(--pedal); }}
-        .amp {{ border-left: 4px solid var(--amp); }}
-        .cab {{ border-left: 4px solid var(--cab); }}
+        .pedal { border-left: 4px solid var(--pedal); }
+        .amp { border-left: 4px solid var(--amp); }
+        .cab { border-left: 4px solid var(--cab); }
 
-        .comp-header {{
+        .comp-header {
             display: flex;
             justify-content: space-between;
+            align-items: center;
             margin-bottom: 15px;
             font-size: 0.75em;
             letter-spacing: 1px;
             color: var(--text-bright);
-        }}
+        }
 
-        input, select, textarea.meta-input {{
+        .comp-header select, .comp-header span, .comp-header div {
+            pointer-events: auto;
+        }
+
+        input, select, textarea.meta-input {
             background: var(--bg);
             border: 1px solid var(--border);
             color: var(--text-bright);
             padding: 6px 10px;
             font-family: inherit;
             border-radius: 2px;
-        }}
+        }
 
-        .setting-row {{
+        .setting-row {
             display: flex;
             justify-content: space-between;
             margin-bottom: 6px;
             font-size: 0.9em;
-        }}
-        .setting-row input {{
+        }
+        .setting-row input {
             border: none;
             background: transparent;
             border-bottom: 1px solid rgba(255,255,255,0.05);
             width: 45%;
             text-align: right;
             color: var(--accent);
-        }}
+        }
 
-        .btn {{
+        .btn {
             background: transparent;
             border: 1px solid var(--accent);
             color: var(--accent);
@@ -150,24 +158,26 @@ HTML_TEMPLATE = """
             text-transform: uppercase;
             font-size: 0.85em;
             transition: all 0.2s;
-        }}
-        .btn:hover {{
+        }
+        .btn:hover {
             background: var(--accent);
             color: var(--panel);
-        }}
-        .btn-danger {{ color: var(--warning); border-color: var(--warning); }}
-        .btn-danger:hover {{ background: var(--warning); color: var(--panel); }}
+        }
+        .btn-danger { color: var(--warning); border-color: var(--warning); }
+        .btn-danger:hover { background: var(--warning); color: var(--panel); }
 
-        .arrow {{ color: var(--border); font-size: 20px; margin: 5px 0; }}
+        .arrow { color: var(--border); font-size: 20px; margin: 5px 0; }
         
-        .toast {{ position: fixed; bottom: 20px; right: 20px; border: 1px solid var(--accent); background: var(--panel); color: var(--accent); padding: 12px 24px; display: none; }}
+        .toast { position: fixed; bottom: 20px; right: 20px; border: 1px solid var(--accent); background: var(--panel); color: var(--accent); padding: 12px 24px; display: none; }
         
-        label {{ font-size: 0.7em; color: var(--border); font-weight: bold; text-transform: uppercase; }}
+        label { font-size: 0.7em; color: var(--border); font-weight: bold; text-transform: uppercase; }
+        
+        .drag-handle { color: var(--border); cursor: grab; font-size: 1.2em; margin-right: 10px; }
     </style>
 </head>
 <body>
     <header>
-        <div style="font-weight: bold;">META-PATCH_IDE // {filename}</div>
+        <div style="font-weight: bold;">META-PATCH_IDE // [[FILENAME]]</div>
         <div>
             <button class="btn" onclick="savePatch()">[ SAVE ]</button>
             <a href="/" class="btn" style="text-decoration: none;">[ EXIT ]</a>
@@ -179,15 +189,15 @@ HTML_TEMPLATE = """
             <div style="margin-bottom: 30px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
                 <div style="grid-column: span 2;">
                     <label>PATCH NAME</label><br>
-                    <input id="patch-name" style="width: 100%; font-size: 1.2em; color: var(--accent);" value="{patch_name}">
+                    <input id="patch-name" style="width: 100%; font-size: 1.2em; color: var(--accent);" value="[[PATCH_NAME]]">
                 </div>
                 <div style="grid-column: span 2;">
                     <label>DESCRIPTION</label><br>
-                    <textarea id="patch-desc" class="meta-input" style="width: 100%;" rows="2">{patch_desc}</textarea>
+                    <textarea id="patch-desc" class="meta-input" style="width: 100%;" rows="2">[[PATCH_DESC]]</textarea>
                 </div>
                 <div style="grid-column: span 2;">
                     <label>TAGS (COMMA SEPARATED)</label><br>
-                    <input id="patch-tags" style="width: 100%;" value="{patch_tags}">
+                    <input id="patch-tags" style="width: 100%;" value="[[PATCH_TAGS]]">
                 </div>
             </div>
             
@@ -207,138 +217,178 @@ HTML_TEMPLATE = """
     <div id="toast" class="toast">DATA_SAVED_SUCCESS</div>
 
     <script>
-        let currentPatch = {patch_json};
-        const filename = "{filename}";
+        let currentPatch = [[PATCH_JSON]];
+        const filename = "[[FILENAME]]";
+        let dragSrcIndex = null;
 
-        function showToast(msg) {{
+        function showToast(msg) {
             const t = document.getElementById('toast');
             t.innerText = msg;
             t.style.display = 'block';
-            setTimeout(() => {{ t.style.display = 'none'; }}, 3000);
-        }}
+            setTimeout(() => { t.style.display = 'none'; }, 3000);
+        }
 
-        function jsonToYaml(obj, indent = 0) {{
+        function jsonToYaml(obj, indent = 0) {
             let yaml = '';
             const spaces = '  '.repeat(indent);
-            
-            if (obj === null) return 'null\\n';
-            
-            for (const key in obj) {{
+            if (obj === null) { return 'null\\n'; }
+            for (const key in obj) {
                 const val = obj[key];
-                if (Array.isArray(val)) {{
-                    yaml += `${{spaces}}${{key}}:\\n`;
-                    val.forEach(item => {{
-                        if (typeof item === 'object' && item !== null) {{
-                            yaml += `${{spaces}}- ${{jsonToYaml(item, indent + 1).trim()}}\\n`;
-                        }} else {{
-                            yaml += `${{spaces}}- ${{typeof item === 'string' ? '"' + item + '"' : item}}\\n`;
-                        }}
-                    }});
-                } else if (typeof val === 'object' && val !== null) {{
-                    yaml += `${{spaces}}${{key}}:\\n${{jsonToYaml(val, indent + 1)}}`;
-                }} else {{
-                    yaml += `${{spaces}}${{key}}: ${{typeof val === 'string' ? '"' + val + '"' : val}}\\n`;
-                }}
-            }}
+                if (Array.isArray(val)) {
+                    yaml += `${spaces}${key}:\\n`;
+                    val.forEach(item => {
+                        if (typeof item === 'object' && item !== null) {
+                            yaml += `${spaces}- ${jsonToYaml(item, indent + 1).trim()}\\n`;
+                        } else {
+                            yaml += `${spaces}- ${typeof item === 'string' ? '"' + item + '"' : item}\\n`;
+                        }
+                    });
+                } else if (typeof val === 'object' && val !== null) {
+                    yaml += `${spaces}${key}:\\n${jsonToYaml(val, indent + 1)}`;
+                } else {
+                    yaml += `${spaces}${key}: ${typeof val === 'string' ? '"' + val + '"' : val}\\n`;
+                }
+            }
             return yaml;
-        }}
+        }
 
-        function updateYamlView() {{
+        function updateYamlView() {
             currentPatch.name = document.getElementById('patch-name').value;
             currentPatch.description = document.getElementById('patch-desc').value;
             currentPatch.tags = document.getElementById('patch-tags').value.split(',').map(t => t.trim()).filter(t => t !== "");
             document.getElementById('yaml-output').value = jsonToYaml(currentPatch);
-        }}
+        }
 
-        function addComponent() {{
-            currentPatch.chain.push({{
+        function handleDragStart(e, index) {
+            dragSrcIndex = index;
+            e.target.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+        }
+
+        function handleDragOver(e) {
+            if (e.preventDefault) { e.preventDefault(); }
+            return false;
+        }
+
+        function handleDrop(e, targetIndex) {
+            if (e.stopPropagation) { e.stopPropagation(); }
+            if (dragSrcIndex !== targetIndex) {
+                const item = currentPatch.chain.splice(dragSrcIndex, 1)[0];
+                currentPatch.chain.splice(targetIndex, 0, item);
+                renderEditor();
+            }
+            return false;
+        }
+
+        function handleDragEnd(e) {
+            e.target.classList.remove('dragging');
+        }
+
+        function addComponent() {
+            currentPatch.chain.push({
                 type: 'pedal',
                 model: 'NEW_COMPONENT',
-                settings: {{ gain: 0.5, tone: 0.5 }}
-            }});
+                settings: { gain: 0.5, tone: 0.5 }
+            });
             renderEditor();
-        }}
+        }
 
-        function removeComponent(idx) {{
+        function removeComponent(idx) {
             currentPatch.chain.splice(idx, 1);
             renderEditor();
-        }}
+        }
 
-        function updateComp(idx, field, val) {{
+        function updateComp(idx, field, val) {
             currentPatch.chain[idx][field] = val;
-            updateYamlView();
-        }}
+            if (field === 'type') {
+                renderEditor();
+            } else {
+                updateYamlView();
+            }
+        }
 
-        function updateSetting(compIdx, key, newVal, isKey = false) {{
+        function updateSetting(compIdx, key, newVal, isKey = false) {
             const settings = currentPatch.chain[compIdx].settings;
-            if (isKey) {{
+            if (isKey) {
                 const val = settings[key];
                 delete settings[key];
                 settings[newVal] = val;
-            }} else {{
+            } else {
                 const num = parseFloat(newVal);
                 settings[key] = isNaN(num) ? newVal : num;
-            }}
+            }
             updateYamlView();
-        }}
+        }
 
-        async function savePatch() {{
-            updateYamlView(); // Ensure latest data
-            const res = await fetch('/save?file=' + filename, {{
+        async function savePatch() {
+            updateYamlView(); 
+            const res = await fetch('/save?file=' + filename, {
                 method: 'POST',
-                headers: {{ 'Content-Type': 'application/json' }},
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(currentPatch)
-            }});
-            if (res.ok) showToast('DATA_SAVED_SUCCESS');
-        }}
+            });
+            if (res.ok) { showToast('DATA_SAVED_SUCCESS'); }
+        }
 
-        function renderEditor() {{
+        function renderEditor() {
             const chainDiv = document.getElementById('signal-chain');
+            if (!chainDiv) { return; }
             chainDiv.innerHTML = '';
             
-            currentPatch.chain.forEach((comp, idx) => {{
+            if (!currentPatch.chain) currentPatch.chain = [];
+
+            currentPatch.chain.forEach((comp, idx) => {
                 const block = document.createElement('div');
-                block.className = `component ${{comp.type.toLowerCase()}}`;
+                block.className = `component ${comp.type.toLowerCase()}`;
+                block.draggable = true;
+                block.setAttribute('ondragstart', `handleDragStart(event, ${idx})`);
+                block.setAttribute('ondragover', `handleDragOver(event)`);
+                block.setAttribute('ondrop', `handleDrop(event, ${idx})`);
+                block.setAttribute('ondragend', `handleDragEnd(event)`);
                 
                 let settingsHtml = '';
-                for (let k in comp.settings) {{
+                for (let k in comp.settings) {
                     settingsHtml += `
                         <div class="setting-row">
-                            <input value="${{k}}" oninput="updateSetting(${{idx}}, '${{k}}', this.value, true)">
-                            <input value="${{comp.settings[k]}}" oninput="updateSetting(${{idx}}, '${{k}}', this.value)">
+                            <input value="${k}" oninput="updateSetting(${idx}, '${k}', this.value, true)">
+                            <input value="${comp.settings[k]}" oninput="updateSetting(${idx}, '${k}', this.value)">
                         </div>
                     `;
-                }}
+                }
 
                 block.innerHTML = `
                     <div class="comp-header">
-                        <select onchange="updateComp(${{idx}}, 'type', this.value)">
-                            <option value="pedal" ${{comp.type==='pedal'?'selected':''}}>PEDAL</option>
-                            <option value="amp" ${{comp.type==='amp'?'selected':''}}>AMP</option>
-                            <option value="cab" ${{comp.type==='cab'?'selected':''}}>CAB</option>
-                        </select>
-                        <span style="cursor:pointer; color:var(--warning)" onclick="removeComponent(${{idx}})">[ REMOVE ]</span>
+                        <div style="display:flex; align-items:center;">
+                            <span class="drag-handle">&#9776;</span>
+                            <select onchange="updateComp(${idx}, 'type', this.value)">
+                                <option value="pedal" ${comp.type==='pedal'?'selected':''}>PEDAL</option>
+                                <option value="amp" ${comp.type==='amp'?'selected':''}>AMP</option>
+                                <option value="cab" ${comp.type==='cab'?'selected':''}>CAB</option>
+                            </select>
+                        </div>
+                        <span style="cursor:pointer; color:var(--warning)" onclick="removeComponent(${idx})">[ REMOVE ]</span>
                     </div>
-                    <input style="width:100%; margin-bottom:15px; font-weight:bold; border:none; background:transparent; font-size:1.1em; padding:0;" 
-                           value="${{comp.model}}" oninput="updateComp(${{idx}}, 'model', this.value)">
+                    <input style="width:100%; margin-bottom:15px; font-weight:bold; border:none; background:transparent; font-size:1.1em; padding:0; color:var(--text-bright);" 
+                           value="${comp.model}" oninput="updateComp(${idx}, 'model', this.value)">
                     <div class="settings-editor">
-                        ${{settingsHtml}}
+                        ${settingsHtml}
                     </div>
                 `;
                 chainDiv.appendChild(block);
-                if (idx < currentPatch.chain.length - 1) {{
+                if (idx < currentPatch.chain.length - 1) {
                     const arrow = document.createElement('div');
                     arrow.className = 'arrow';
                     arrow.innerHTML = '&darr;';
                     chainDiv.appendChild(arrow);
-                }}
-            }});
+                }
+            });
             updateYamlView();
-        }}
+        }
 
         document.getElementById('patch-name').oninput = updateYamlView;
         document.getElementById('patch-desc').oninput = updateYamlView;
         document.getElementById('patch-tags').oninput = updateYamlView;
+        
         window.onload = renderEditor;
     </script>
 </body>
@@ -352,26 +402,26 @@ INDEX_TEMPLATE = """
     <meta charset="utf-8">
     <title>Meta-Patch Library</title>
     <style>
-        :root {{
+        :root {
             --bg: #002b36;
             --panel: #073642;
             --text: #839496;
             --accent: #268bd2;
             --border: #586e75;
-        }}
-        body {{ font-family: 'ui-monospace', monospace; background: var(--bg); color: var(--text); padding: 50px; line-height: 1.6; }}
-        h1 {{ border-bottom: 1px solid var(--border); padding-bottom: 15px; color: #93a1a1; display: flex; justify-content: space-between; }}
-        .grid {{ display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 25px; margin-top: 30px; }}
-        .card {{ border: 1px solid var(--border); padding: 20px; cursor: pointer; background: var(--panel); transition: all 0.2s; }}
-        .card:hover {{ border-color: var(--accent); transform: translateY(-2px); }}
-        .btn {{ border: 1px solid var(--accent); color: var(--accent); background: transparent; padding: 10px 25px; cursor: pointer; text-decoration: none; font-size: 0.9em; }}
-        .btn:hover {{ background: var(--accent); color: var(--bg); }}
-        .tag {{ font-size: 0.7em; background: #586e75; color: #eee; padding: 3px 8px; margin-right: 6px; border-radius: 3px; }}
+        }
+        body { font-family: 'ui-monospace', monospace; background: var(--bg); color: var(--text); padding: 50px; line-height: 1.6; }
+        h1 { border-bottom: 1px solid var(--border); padding-bottom: 15px; color: #93a1a1; display: flex; justify-content: space-between; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 25px; margin-top: 30px; }
+        .card { border: 1px solid var(--border); padding: 20px; cursor: pointer; background: var(--panel); transition: all 0.2s; }
+        .card:hover { border-color: var(--accent); transform: translateY(-2px); }
+        .btn { border: 1px solid var(--accent); color: var(--accent); background: transparent; padding: 10px 25px; cursor: pointer; text-decoration: none; font-size: 0.9em; }
+        .btn:hover { background: var(--accent); color: var(--bg); }
+        .tag { font-size: 0.7em; background: #586e75; color: #eee; padding: 3px 8px; margin-right: 6px; border-radius: 3px; }
     </style>
 </head>
 <body>
     <h1>META-PATCH_LIBRARY <a href="/?new=true" class="btn">[ + NEW_PATCH ]</a></h1>
-    <div class="grid">{cards}</div>
+    <div class="grid">[[CARDS]]</div>
 </body>
 </html>
 """
@@ -428,7 +478,7 @@ class PatchHandler(http.server.SimpleHTTPRequestHandler):
         self.send_response(200)
         self.send_header("Content-type", "text/html; charset=utf-8")
         self.end_headers()
-        self.wfile.write(INDEX_TEMPLATE.format(cards="".join(cards)).encode("utf-8"))
+        self.wfile.write(INDEX_TEMPLATE.replace("[[CARDS]]", "".join(cards)).encode("utf-8"))
 
     def render_editor(self, filename):
         if filename:
@@ -444,13 +494,14 @@ class PatchHandler(http.server.SimpleHTTPRequestHandler):
         self.send_response(200)
         self.send_header("Content-type", "text/html; charset=utf-8")
         self.end_headers()
-        html = HTML_TEMPLATE.format(
-            filename=file_val,
-            patch_name=data.get('name', ''),
-            patch_desc=data.get('description', ''),
-            patch_tags=tags_str,
-            patch_json=json.dumps(data)
-        )
+        
+        # Consistent placeholder replacement
+        html = HTML_TEMPLATE.replace("[[FILENAME]]", file_val)
+        html = html.replace("[[PATCH_NAME]]", str(data.get('name', '')))
+        html = html.replace("[[PATCH_DESC]]", str(data.get('description', '')))
+        html = html.replace("[[PATCH_TAGS]]", tags_str)
+        html = html.replace("[[PATCH_JSON]]", json.dumps(data))
+        
         self.wfile.write(html.encode("utf-8"))
 
 if __name__ == "__main__":

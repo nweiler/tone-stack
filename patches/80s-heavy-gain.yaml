@@ -25,9 +25,9 @@ chain:
   model: 4x12 Greenback
   settings:
     mic: SM57
-    position: Cap Edge
+    position: Cab Edge
 - type: pedal
-  model: NEW_EFFECT
+  model: Chorus
   settings:
     gain: 0.5
     tone: 0.5
