@@ -1,0 +1,79 @@
+{
+  "version": 6,
+  "data": {
+    "meta": {
+      "name": "80s Heavy Gain",
+      "application": "POD Go Edit",
+      "appversion": "1.40.0"
+    },
+    "blocks": {
+      "wah": {
+        "model": "HD2_WahFassel",
+        "@enabled": false,
+        "params": {}
+      },
+      "vol": {
+        "model": "HD2_VolMonoLog",
+        "@enabled": true,
+        "params": {}
+      },
+      "fxloop": {
+        "model": "HD2_FXLoopMono",
+        "@enabled": false,
+        "params": {}
+      },
+      "amp": {
+        "model": "Plexi",
+        "@enabled": true,
+        "params": {
+          "Gain": 0.8,
+          "Treble": 0.7,
+          "Middle": 0.6,
+          "Bass": 0.5,
+          "presence": 0.6
+        }
+      },
+      "cab": {
+        "model": "4x12 Greenback",
+        "@enabled": true,
+        "params": {
+          "mic": "SM57",
+          "position": "Cap Edge"
+        }
+      },
+      "eq": {
+        "model": "L6_None",
+        "@enabled": false,
+        "params": {}
+      },
+      "block0": {
+        "model": "SD-1",
+        "@enabled": true,
+        "params": {
+          "Gain": 0.2,
+          "Tone": 0.6,
+          "ChVol": 0.8
+        },
+        "@position": 0
+      },
+      "block1": {
+        "model": "L6_None",
+        "@enabled": false,
+        "params": {},
+        "@position": 1
+      },
+      "block2": {
+        "model": "L6_None",
+        "@enabled": false,
+        "params": {},
+        "@position": 2
+      },
+      "block3": {
+        "model": "L6_None",
+        "@enabled": false,
+        "params": {},
+        "@position": 3
+      }
+    }
+  }
+}

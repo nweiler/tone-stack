@@ -1,0 +1,33 @@
+name: 80s Heavy Gain
+description: Classic 80s hair metal tone. Hot-rod Plexi with a boost.
+tags:
+- Metal
+- 80s
+- High Gain
+chain:
+- type: pedal
+  category: Boost
+  model: SD-1
+  settings:
+    gain: 0.2
+    tone: 0.6
+    level: 0.8
+- type: amp
+  category: Head
+  model: Plexi
+  settings:
+    gain: 0.8
+    treble: 0.7
+    middle: 0.6
+    bass: 0.5
+    presence: 0.6
+- type: cab
+  model: 4x12 Greenback
+  settings:
+    mic: SM57
+    position: Cap Edge
+- type: pedal
+  model: NEW_EFFECT
+  settings:
+    gain: 0.5
+    tone: 0.5

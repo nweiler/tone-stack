@@ -1,0 +1,30 @@
+{
+  "patch_name": "80s Heavy Gain",
+  "components": [
+    {
+      "id": "SD-1",
+      "params": {
+        "Drive": 0.2,
+        "Tone": 0.6,
+        "Volume": 0.8
+      }
+    },
+    {
+      "id": "Plexi",
+      "params": {
+        "Drive": 0.8,
+        "Treble": 0.7,
+        "Middle": 0.6,
+        "Bass": 0.5,
+        "presence": 0.6
+      }
+    },
+    {
+      "id": "4x12 Greenback",
+      "params": {
+        "mic": "SM57",
+        "position": "Cap Edge"
+      }
+    }
+  ]
+}

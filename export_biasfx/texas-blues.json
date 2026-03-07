@@ -1,0 +1,31 @@
+{
+  "patch_name": "Texas Blues",
+  "components": [
+    {
+      "id": "808_Overdrive",
+      "params": {
+        "Drive": 0.1,
+        "Tone": 0.5,
+        "Volume": 0.9
+      }
+    },
+    {
+      "id": "Super_Reverb_65",
+      "params": {
+        "Volume": 0.6,
+        "Treble": 0.7,
+        "Middle": 0.5,
+        "Bass": 0.4,
+        "Reverb": 3.0,
+        "bright": 1.0
+      }
+    },
+    {
+      "id": "4x10_Jensen_Alnico",
+      "params": {
+        "mic": "SM57",
+        "position": "Edge"
+      }
+    }
+  ]
+}

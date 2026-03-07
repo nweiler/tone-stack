@@ -1,0 +1,32 @@
+name: "Texas Blues"
+description: "Inspired by SRV's signature sound. Tubescreamer into a clean Fender-style amp."
+tags: ["Blues", "SRV", "Classic"]
+chain:
+  - type: pedal
+    category: Overdrive
+    model: "Tube Screamer"
+    settings:
+      gain: 0.1 # Very low gain, mostly for boost
+      tone:
+        value: 12
+        unit: "oclock" # 12 o'clock
+      level: 0.9 # High volume for boost
+
+  - type: amp
+    category: Combo
+    model: "Fender Super Reverb"
+    settings:
+      volume: 
+        value: 6
+        unit: "0-10"
+      treble: 0.7
+      middle: 0.5
+      bass: 0.4
+      reverb: 3
+      bright: true
+
+  - type: cab
+    model: "4x10 Jensen"
+    settings:
+      mic: "SM57"
+      position: "Edge"

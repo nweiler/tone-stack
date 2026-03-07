@@ -1,0 +1,86 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Meta-Patch Schema",
+  "description": "A standardized metadata format for describing guitar tone stacks across different platforms.",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Name of the patch."
+    },
+    "description": {
+      "type": "string",
+      "description": "A brief description or context for the patch."
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "chain": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/component"
+      },
+      "description": "Ordered signal chain from input to output."
+    }
+  },
+  "required": ["name", "chain"],
+  "definitions": {
+    "component": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["pedal", "amp", "cab", "ir", "rack", "utility"],
+          "description": "The type of gear."
+        },
+        "category": {
+          "type": "string",
+          "description": "Sub-category (e.g., 'Overdrive', 'Reverb', 'Head', 'Combo')."
+        },
+        "model": {
+          "type": "string",
+          "description": "The specific gear model being approximated (e.g., 'Tube Screamer', 'Plexi')."
+        },
+        "settings": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/setting_value"
+          },
+          "description": "Key-value pairs for settings."
+        }
+      },
+      "required": ["type", "model", "settings"]
+    },
+    "setting_value": {
+      "oneOf": [
+        {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Normalized value (0.0 to 1.0)."
+        },
+        {
+          "type": "object",
+          "properties": {
+            "value": { "type": "number" },
+            "unit": {
+              "type": "string",
+              "enum": ["0-10", "1-12", "oclock", "percent", "db", "ms", "hz"]
+            }
+          },
+          "required": ["value", "unit"]
+        },
+        {
+          "type": "string",
+          "description": "For discrete settings like 'On/Off', 'Bright', 'Ch. 1'."
+        },
+        {
+          "type": "boolean"
+        }
+      ]
+    }
+  }
+}

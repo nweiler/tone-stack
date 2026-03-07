@@ -1,0 +1,46 @@
+# Mapping Meta-Patch gear models to platform-specific names and parameter names.
+
+BiasFX:
+  models:
+    "Tube Screamer": "808_Overdrive"
+    "Fender Super Reverb": "Super_Reverb_65"
+    "4x10 Jensen": "4x10_Jensen_Alnico"
+  parameters:
+    gain: "Drive"
+    level: "Volume"
+    tone: "Tone"
+    volume: "Volume"
+    treble: "Treble"
+    middle: "Middle"
+    bass: "Bass"
+    reverb: "Reverb"
+
+Amplitube:
+  models:
+    "Tube Screamer": "T-Screamer"
+    "Fender Super Reverb": "Super-Reverb"
+    "4x10 Jensen": "4x10-Open-Back"
+  parameters:
+    gain: "Gain"
+    level: "Level"
+    tone: "Tone"
+    volume: "Volume"
+    treble: "High"
+    middle: "Mid"
+    bass: "Low"
+    reverb: "Reverb"
+
+PodGo:
+  models:
+    "Tube Screamer": "HD2_DistScream808"
+    "Fender Super Reverb": "HD2_AmpUSDoubleNrm"
+    "4x10 Jensen": "HD2_Cab4x10Tweed"
+  parameters:
+    gain: "Gain"
+    level: "ChVol"
+    tone: "Tone"
+    volume: "Drive"
+    treble: "Treble"
+    middle: "Middle"
+    bass: "Bass"
+    reverb: "Mix"

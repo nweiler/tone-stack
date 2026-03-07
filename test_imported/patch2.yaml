@@ -1,0 +1,26 @@
+name: Texas Blues
+description: 'Imported from POD GO. Version: 6'
+tags:
+- Imported
+- PodGo
+chain:
+- type: pedal
+  model: Tube Screamer
+  settings:
+    gain: 0.1
+    tone: 0.5
+    level: 0.9
+- type: amp
+  model: Fender Super Reverb
+  settings:
+    volume: 0.6
+    treble: 0.7
+    middle: 0.5
+    bass: 0.4
+    reverb: 3.0
+    bright: 1.0
+- type: cab
+  model: 4x10 Jensen
+  settings:
+    mic: SM57
+    position: Edge

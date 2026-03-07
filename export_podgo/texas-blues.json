@@ -1,0 +1,80 @@
+{
+  "version": 6,
+  "data": {
+    "meta": {
+      "name": "Texas Blues",
+      "application": "POD Go Edit",
+      "appversion": "1.40.0"
+    },
+    "blocks": {
+      "wah": {
+        "model": "HD2_WahFassel",
+        "@enabled": false,
+        "params": {}
+      },
+      "vol": {
+        "model": "HD2_VolMonoLog",
+        "@enabled": true,
+        "params": {}
+      },
+      "fxloop": {
+        "model": "HD2_FXLoopMono",
+        "@enabled": false,
+        "params": {}
+      },
+      "amp": {
+        "model": "HD2_AmpUSDoubleNrm",
+        "@enabled": true,
+        "params": {
+          "Drive": 0.6,
+          "Treble": 0.7,
+          "Middle": 0.5,
+          "Bass": 0.4,
+          "Mix": 3.0,
+          "bright": 1.0
+        }
+      },
+      "cab": {
+        "model": "HD2_Cab4x10Tweed",
+        "@enabled": true,
+        "params": {
+          "mic": "SM57",
+          "position": "Edge"
+        }
+      },
+      "eq": {
+        "model": "L6_None",
+        "@enabled": false,
+        "params": {}
+      },
+      "block0": {
+        "model": "HD2_DistScream808",
+        "@enabled": true,
+        "params": {
+          "Gain": 0.1,
+          "Tone": 0.5,
+          "ChVol": 0.9
+        },
+        "@position": 0
+      },
+      "block1": {
+        "model": "L6_None",
+        "@enabled": false,
+        "params": {},
+        "@position": 1
+      },
+      "block2": {
+        "model": "L6_None",
+        "@enabled": false,
+        "params": {},
+        "@position": 2
+      },
+      "block3": {
+        "model": "L6_None",
+        "@enabled": false,
+        "params": {},
+        "@position": 3
+      }
+    }
+  }
+}
