@@ -2,13 +2,40 @@ import http.server
 import socketserver
 import json
 import os
+import sys
 import yaml
 import traceback
 from pathlib import Path
 from urllib.parse import urlparse, parse_qs
 
+sys.path.insert(0, str(Path(__file__).parent))
+import adapters
+from meta_patch import MetaPatch
+
 PORT = 8000
 PATCH_DIR = Path("./patches")
+
+
+def generate_preview(yaml_content, platform):
+    """Convert a YAML patch string to a platform-specific export string.
+
+    Returns (output_string, None) on success or (None, error_message) on failure.
+    """
+    try:
+        patch = MetaPatch.from_yaml(yaml_content)
+    except Exception as e:
+        return None, f"YAML parse error: {e}"
+
+    try:
+        adapter = adapters.get_adapter(platform)
+    except ValueError as e:
+        return None, str(e)
+
+    try:
+        result = adapter.export_patch(patch)
+        return result, None
+    except Exception as e:
+        return None, f"Export error: {e}"
 
 HTML_TEMPLATE = """
 <!DOCTYPE html>
@@ -169,10 +196,53 @@ HTML_TEMPLATE = """
         .arrow { color: var(--border); font-size: 20px; margin: 5px 0; }
         
         .toast { position: fixed; bottom: 20px; right: 20px; border: 1px solid var(--accent); background: var(--panel); color: var(--accent); padding: 12px 24px; display: none; }
-        
+
         label { font-size: 0.7em; color: var(--border); font-weight: bold; text-transform: uppercase; }
-        
+
         .drag-handle { color: var(--border); cursor: grab; font-size: 1.2em; margin-right: 10px; }
+
+        .pane-tabs {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 10px;
+        }
+        .pane-tab {
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--border);
+            font-family: inherit;
+            font-size: 0.7em;
+            font-weight: bold;
+            letter-spacing: 1px;
+            padding: 4px 12px;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+        .pane-tab.active {
+            color: var(--accent);
+            border-color: var(--accent);
+        }
+        .pane-tab:hover:not(.active) { color: var(--text-bright); }
+        #export-platform {
+            margin-left: auto;
+            font-size: 0.7em;
+            padding: 4px 8px;
+            display: none;
+        }
+        #export-output {
+            flex: 1;
+            overflow-y: auto;
+            color: #2aa198;
+            font-size: 13px;
+            line-height: 1.5;
+            white-space: pre;
+            margin: 0;
+            display: none;
+        }
+        .export-error { color: var(--warning); }
     </style>
 </head>
 <body>
@@ -209,8 +279,17 @@ HTML_TEMPLATE = """
         </div>
 
         <div class="text-pane">
-            <div style="font-size: 0.7em; color: var(--border); margin-bottom: 10px; font-weight: bold;">LIVE_YAML_SOURCE</div>
+            <div class="pane-tabs">
+                <button class="pane-tab active" id="tab-yaml" onclick="switchTab('yaml')">YAML</button>
+                <button class="pane-tab" id="tab-export" onclick="switchTab('export')">EXPORT</button>
+                <select id="export-platform" onchange="refreshExport()">
+                    <option value="podgo">POD GO</option>
+                    <option value="biasfx">BIAS FX</option>
+                    <option value="amplitube">AMPLITUBE</option>
+                </select>
+            </div>
             <textarea id="yaml-output" readonly></textarea>
+            <pre id="export-output"></pre>
         </div>
     </div>
 
@@ -252,11 +331,50 @@ HTML_TEMPLATE = """
             return yaml;
         }
 
+        let activeTab = 'yaml';
+
+        function switchTab(tab) {
+            activeTab = tab;
+            document.getElementById('tab-yaml').classList.toggle('active', tab === 'yaml');
+            document.getElementById('tab-export').classList.toggle('active', tab === 'export');
+            document.getElementById('yaml-output').style.display = tab === 'yaml' ? 'block' : 'none';
+            document.getElementById('export-output').style.display = tab === 'export' ? 'block' : 'none';
+            document.getElementById('export-platform').style.display = tab === 'export' ? 'block' : 'none';
+            if (tab === 'export') refreshExport();
+        }
+
+        async function refreshExport() {
+            if (activeTab !== 'export') return;
+            const platform = document.getElementById('export-platform').value;
+            const yamlContent = document.getElementById('yaml-output').value;
+            const out = document.getElementById('export-output');
+            out.className = '';
+            out.textContent = '...';
+            try {
+                const res = await fetch('/api/export-preview', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ yaml_content: yamlContent, platform })
+                });
+                const data = await res.json();
+                if (data.error) {
+                    out.className = 'export-error';
+                    out.textContent = data.error;
+                } else {
+                    out.textContent = data.output;
+                }
+            } catch (e) {
+                out.className = 'export-error';
+                out.textContent = 'Connection error: ' + e.message;
+            }
+        }
+
         function updateYamlView() {
             currentPatch.name = document.getElementById('patch-name').value;
             currentPatch.description = document.getElementById('patch-desc').value;
             currentPatch.tags = document.getElementById('patch-tags').value.split(',').map(t => t.trim()).filter(t => t !== "");
             document.getElementById('yaml-output').value = jsonToYaml(currentPatch);
+            refreshExport();
         }
 
         function handleDragStart(e, index) {
@@ -457,6 +575,15 @@ class PatchHandler(http.server.SimpleHTTPRequestHandler):
             self.send_response(200)
             self.end_headers()
             self.wfile.write(b"OK")
+        elif self.path == "/api/export-preview":
+            content_length = int(self.headers['Content-Length'])
+            body = json.loads(self.rfile.read(content_length))
+            result, error = generate_preview(body.get("yaml_content", ""), body.get("platform", "podgo"))
+            self.send_response(200)
+            self.send_header("Content-type", "application/json")
+            self.end_headers()
+            payload = {"error": error} if error else {"output": result}
+            self.wfile.write(json.dumps(payload).encode("utf-8"))
 
     def render_index(self):
         files = sorted(list(PATCH_DIR.glob("*.yaml")) + list(PATCH_DIR.glob("*.yml")))
